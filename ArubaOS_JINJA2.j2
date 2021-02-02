@@ -1,0 +1,396 @@
+hostname {{ item.hostname }}
+
+{% if item.ospf_area is defined and item.ospf_area | length > 0 %}
+router ospf
+area {{ item.ospf_area }}
+{% endif %}
+{% if item.ospf_zone is defined and item.ospf_zone | length > 0 %}
+area {{ item.ospf_zone }}
+enable
+{% endif %}
+
+{% if item.ospf_router_id is defined and item.ospf_router_id | length > 0 %}
+router-id {{ item.ospf_router_id }}
+{% endif %}
+
+{% if ospf_redistribute_network is defined and item.ospf_redistribute_network | length > 0 %}
+redistribute {{ item.ospf_redistribute_network }}
+{% endif %}
+
+
+################### Be very careful if need to change below #################
+{% for item in csvfile.slice(3) %}
+{{ item }}
+{% if loop.index != 1 %}
+{% set list = item.split("!") %}
+vlan {{ list[2]|trim() }}
+
+name "{{ list[3]|trim() }}"
+
+{%  if list[4] != "" %}
+{%  set ip_address = list[4].split("!") %}
+{%  for each_ip_address in ip_address and each_ip_address != "L2" %}
+ip address {{ each_ip_address }}
+{% elif each_ip_address = "L2"}
+{% endfor %}
+{%  endif %}
+
+{%  if list[5] == "yes" %}
+ip igmp {{ list[5]trim() }}
+{%  else %}
+{%  endif %}
+
+{%  if list[6] != "" %}
+{%  set list_helper = list[6].split("!") %}
+{%  for each_list_helper in list_helper %}
+ip helper-address {{ each_list_helper|trim() }}
+{%   endfor %}
+{%  else %}
+{%  endif %}
+
+{%  if list[7] != "" %}
+{%  set ip_ospf_area = list[6].split("!") %}
+{% for each_ip_ospf_area in ip_ospf_area %}
+ip ospf area {{ list[7]|trim() }}
+{%   endfor %}
+{%  else %}
+{%  endif %}
+
+{% if list[8] != "" %}
+{% set ip_ospf_ %}
+ip ospf passive interface {{ list[8]trim() }}
+{% endif %}
+{% endif %}
+{% endfor %}
+
+{% if list[9] != "" %}
+{% se %}
+
+
+{% if item.spanning_tree_bpdu_filter is defined and item.spanning_tree_bpdu_filter | length > 0 %}
+spanning-tree {{ item.spanning_tree_bpdu_filter }} bpdu-filter
+{% else %}
+{% endif %}
+
+{% if item.spanning_tree_mode is defined and item.spanning_tree_mode == "rapid" %}
+spanning-tree
+spanning-tree mode rapid-pvst
+{% elif item.spanning_tree_mode is defined and item.spanning_tree_mode == "mst" %}
+spanning-tree
+spanning-tree mode mst
+{% elif item.spanning_tree_mode is defined and item.spanning_tree_mode == "pvst" %}
+spanning-tree
+spanning-tree mode pvst
+{% else %}
+{% endif %}
+
+{% if item.spanning_tree_vlan is defined and item.spanning_tree_vlan_priority is defined and item.spanning_tree_vlan | length > 0 and item.spanning_tree_vlan_priority | length > 0 %}
+spanning-tree vlan {{ item.spanning_tree_vlan }} priority {{ item.spanning_tree_vlan_priority }}
+{% else %}
+{% endif %}
+
+{% if item.spanning_tree_bpdu_protection_port is defined and item.spanning_tree_bpdu_protection_port | length > 0 %}
+spanning-tree {{ item.spanning_tree_bpdu_protection_port }} bpdu-protection
+{% else %}
+{% endif %}
+
+{% if item.spanning_tree_bpdu_protection_timeout is defined and item.spanning_tree_bpdu_protection_timeout | length > 0 %}
+spanning-tree bpdu-protection-timeout {{ item.spanning_tree_bpdu_protection_timeout }}
+{% else %}
+{% endif %}
+
+{% if item.spanning_tree_loop_protect_port is defined and item.spanning_tree_loop_protect_port | length > 0 %}
+loop-protect {{ item.spanning_tree_loop_protect_port }}
+{% else %}
+{% endif %}
+
+{% if item.spanning_tree_loop_protect_disable_timer is defined and item.spanning_tree_loop_protect_disable_timer | length > 0 %}
+loop-protect disable-timer {{ item.spanning_tree_loop_protect_disable_timer }}
+{% else %}
+{% endif %}
+
+{% if item.snmp_community_operator is defined and item.snmp_community_operator | length > 0  %}
+snmp-server community {{ item.snmp_community_operator }} operator
+{% endif %}
+
+{% if item.snmp_community_unrestricted is defined and item.snmp_community_unrestricted | length > 0  %}
+snmp-server community {{ item.snmp_community_unrestricted }} unrestricted
+{% else %}
+{% endif %}
+
+{% if item.snmp_contact is defined and item.snmp_contact | length > 0 %}
+snmp-server contact "{{ item.snmp_contact }}"
+{% else %}
+{% endif %}
+
+{% if item.snmp_location is defined and item.snmp_location | length > 0 %}
+snmp-server location "{{ item.snmp_location }}"
+{% else %}
+{% endif %}
+
+{% if item.ntp_server is defined %}
+timesync ntp
+ntp unicast
+ntp enable
+{% set ntp_server = item.ntp_server.split(',') %}
+{% for each_ntp_server in ntp_server %}
+ntp server {{ each_ntp_server }}
+{% endfor %}
+{% else %}
+{% endif %}
+
+{% if item.ntp_source is defined %}
+ntp source {{ item.ntp_source }}
+{% endif %}
+
+
+timesync ntp
+ntp unicast
+ntp enable
+{% set ntp_server = item.ntp_server.split(',') %}
+{% for each_ntp_server in ntp_server %}
+ntp server {{ each_ntp_server }}
+{% endfor %}
+{% else %}
+{% endif %}
+
+{% if item.timezone is defined and item.timezone | length > 0 %}
+time daylight-time-rule continental-us-and-canada
+time timezone {{ item.timezone }}
+{% else %}
+{% endif %}
+
+{% if item.dns_server is defined and item.dns_server | length > 0 %}
+{% set dns_server = item.dns_server.split(',') %}
+{% for each_dns_server in dns_server %}
+ip dns server-address priority {{ loop.index }} {{ each_dns_server }}
+{% endfor %}
+{% else %}
+{% endif %}
+
+{% if item.dns_suffix is defined and item.dns_suffix | length > 0 %}
+ip dns domain-name {{ item.dns_suffix}}
+{% else %}
+{% endif %}
+
+{% if item.ssh_key_bitsize is defined and item.ssh_key_bitsize | length > 0 %}
+crypto key generate ssh rsa bits {{ item.ssh_key_bitsize}}
+ip ssh
+{% else %}
+{% endif %}
+
+{% if item.ip_ssh is defined and item.ip_ssh == 'yes' %}
+ip ssh
+{% elif item.ip_ssh is defined and item.ip_ssh == 'no' %}
+no ip ssh
+{% endif %}
+
+{% if item.ip_telnet is defined and item.ip_telnet == 'no' %}
+no telnet-server
+{% elif item.ip_telnet is defined and item.ip_telnet == 'yes' %}
+telnet-server
+{% endif %}
+
+{# if item.web_management_ssl is defined and item.web_management_ssl == 'yes' %}
+crypto pki enroll-self-signed certificate-name SSL subject
+Common Name
+Org Unit
+Org Name
+Locality
+State
+US
+web-management ssl
+{% else %}
+{% endif #}
+
+{% if item.http_server is defined and item.http_server == 'no' %}
+no web-management
+{% else %}
+{% endif %}
+
+{% if item.mgmt_vlan is defined and item.mgmt_ip is defined and item.mgmt_vlan | length > 0 and item.mgmt_ip | length > 0 %}
+vlan {{ item.mgmt_vlan }}
+name Switch-Mgmt
+ip address {{ item.mgmt_ip }}
+{% else %}
+{% endif %}
+
+{% if item.oobm_mgmt_ip is defined and item.oobm_mgmt_ip | length > 0 %}
+oobm
+ip address {{ item.oobm_mgmt_ip }}
+{% else %}
+{% endif %}
+
+
+acl
+
+############################################################################################
+
+
+
+
+
+#############################################################################################
+
+
+{% if item.uplink_interface_1 is defined and item.uplink_interface_1 | length > 0 %}
+interface {{ item.uplink_interface_1 }}
+{% else %}
+{% endif %}
+{% if item.uplink_name_1 is defined and item.uplink_name_1 | length > 0 %}
+name "{{ item.uplink_name_1 }}"
+{% else %}
+{% endif %}
+{% if item.uplink_tagged_1 is defined and item.uplink_tagged_1 | length > 0 %}
+tag vlan {{ item.uplink_tagged_1 }}
+{% else %}
+{% endif %}
+{% if item.uplink_untagged_1 is defined and item.uplink_untagged_1 | length > 0 %}
+untag vlan {{ item.uplink_untagged_1 }}
+{% else %}
+{% endif %}
+{% if item.uplink_interface_2 is defined and item.uplink_interface_2 | length > 0 %}
+interface {{ item.uplink_interface_2 }}
+{% else %}
+{% endif %}
+{% if item.uplink_name_2 is defined and item.uplink_name_2 | length > 0 %}
+name "{{ item.uplink_name_2 }}"
+{% else %}
+{% endif %}
+{% if item.uplink_tagged_2 is defined and item.uplink_tagged_2 | length > 0 %}
+tag vlan {{ item.uplink_tagged_2 }}
+{% else %}
+{% endif %}
+{% if item.uplink_untagged_2 is defined and item.uplink_untagged_2 | length > 0 %}
+untag vlan {{ item.uplink_untagged_2 }}
+{% else %}
+{% endif %}
+{% if item.uplink_interface_3 is defined and item.uplink_interface_3 | length > 0 %}
+interface {{ item.uplink_interface_3 }}
+{% else %}
+{% endif %}
+{% if item.uplink_name_3 is defined and item.uplink_name_3 | length > 0 %}
+name "{{ item.uplink_name_3 }}"
+{% else %}
+{% endif %}
+{% if item.uplink_tagged_3 is defined and item.uplink_tagged_3 | length > 0 %}
+tag vlan {{ item.uplink_tagged_3 }}
+{% else %}
+{% endif %}
+{% if item.uplink_untagged_3 is defined and item.uplink_untagged_3 | length > 0 %}
+untag vlan {{ item.uplink_untagged_3 }}
+{% else %}
+{% endif %}
+{% if item.uplink_interface_4 is defined and item.uplink_interface_4 | length > 0 %}
+interface {{ item.uplink_interface_4 }}
+{% else %}
+{% endif %}
+{% if item.uplink_name_4 is defined and item.uplink_name_4 | length > 0 %}
+name "{{ item.uplink_name_4 }}"
+{% else %}
+{% endif %}
+{% if item.uplink_tagged_4 is defined and item.uplink_tagged_4 | length > 0 %}
+tag vlan {{ item.uplink_tagged_4 }}
+{% else %}
+{% endif %}
+{% if item.uplink_untagged_4 is defined and item.uplink_untagged_4 | length > 0 %}
+untag vlan {{ item.uplink_untagged_4 }}
+{% else %}
+{% endif %}
+{% if item.uplink_interface_5 is defined and item.uplink_interface_5 | length > 0 %}
+interface {{ item.uplink_interface_5 }}
+{% else %}
+{% endif %}
+{% if item.uplink_name_5 is defined and item.uplink_name_5 | length > 0 %}
+name "{{ item.uplink_name_5 }}"
+{% else %}
+{% endif %}
+{% if item.uplink_tagged_5 is defined and item.uplink_tagged_5 | length > 0 %}
+tag vlan {{ item.uplink_tagged_5 }}
+{% else %}
+{% endif %}
+{% if item.uplink_untagged_5 is defined and item.uplink_untagged_5 | length > 0 %}
+untag vlan {{ item.uplink_untagged_5 }}
+{% else %}
+{% endif %}
+{% if item.uplink_interface_6 is defined and item.uplink_interface_6 | length > 0 %}
+interface {{ item.uplink_interface_6 }}
+{% else %}
+{% endif %}
+{% if item.uplink_name_6 is defined and item.uplink_name_6 | length > 0 %}
+name "{{ item.uplink_name_6 }}"
+{% else %}
+{% endif %}
+{% if item.uplink_tagged_6 is defined and item.uplink_tagged_6 | length > 0 %}
+tag vlan {{ item.uplink_tagged_6 }}
+{% else %}
+{% endif %}
+{% if item.uplink_untagged_6 is defined and item.uplink_untagged_6 | length > 0 %}
+untag vlan {{ item.uplink_untagged_6 }}
+{% else %}
+{% endif %}
+{% if item.uplink_interface_7 is defined and item.uplink_interface_7 | length > 0 %}
+interface {{ item.uplink_interface_7 }}
+{% else %}
+{% endif %}
+{% if item.uplink_name_7 is defined and item.uplink_name_7 | length > 0 %}
+name "{{ item.uplink_name_7 }}"
+{% else %}
+{% endif %}
+{% if item.uplink_tagged_7 is defined and item.uplink_tagged_7 | length > 0 %}
+tag vlan {{ item.uplink_tagged_7 }}
+{% else %}
+{% endif %}
+{% if item.uplink_untagged_7 is defined and item.uplink_untagged_7 | length > 0 %}
+untag vlan {{ item.uplink_untagged_7 }}
+{% else %}
+{% endif %}
+{% if item.uplink_interface_8 is defined and item.uplink_interface_8 | length > 0 %}
+interface {{ item.uplink_interface_8 }}
+{% else %}
+{% endif %}
+{% if item.uplink_name_8 is defined and item.uplink_name_8 | length > 0 %}
+name "{{ item.uplink_name_8 }}"
+{% else %}
+{% endif %}
+{% if item.uplink_tagged_8 is defined and item.uplink_tagged_8 | length > 0 %}
+tag vlan {{ item.uplink_tagged_8 }}
+{% else %}
+{% endif %}
+{% if item.uplink_untagged_8 is defined and item.uplink_untagged_8 | length > 0 %}
+untag vlan {{ item.uplink_untagged_8 }}
+{% else %}
+{% endif %}
+{% if item.uplink_interface_9 is defined and item.uplink_interface_9 | length > 0 %}
+interface {{ item.uplink_interface_9 }}
+{% else %}
+{% endif %}
+{% if item.uplink_name_9 is defined and item.uplink_name_9 | length > 0 %}
+name "{{ item.uplink_name_9 }}"
+{% else %}
+{% endif %}
+{% if item.uplink_tagged_9 is defined and item.uplink_tagged_9 | length > 0 %}
+tag vlan {{ item.uplink_tagged_9 }}
+{% else %}
+{% endif %}
+{% if item.uplink_untagged_9 is defined and item.uplink_untagged_9 | length > 0 %}
+untag vlan {{ item.uplink_untagged_9 }}
+{% else %}
+{% endif %}
+{% if item.uplink_interface_10 is defined and item.uplink_interface_10 | length > 0 %}
+interface {{ item.uplink_interface_10 }}
+{% else %}
+{% endif %}
+{% if item.uplink_name_10 is defined and item.uplink_name_10 | length > 0 %}
+name "{{ item.uplink_name_10 }}"
+{% else %}
+{% endif %}
+{% if item.uplink_tagged_10 is defined and item.uplink_tagged_10 | length > 0 %}
+tag vlan {{ item.uplink_tagged_10 }}
+{% else %}
+{% endif %}
+{% if item.uplink_untagged_10 is defined and item.uplink_untagged_10 | length > 0 %}
+untag vlan {{ item.uplink_untagged_10 }}
+{% else %}
+{% endif %}
+exit
