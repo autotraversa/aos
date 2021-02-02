@@ -1,8 +1,6 @@
 - name: csv
   gather_facts: false
   hosts: localhost
-  vars:
-    csvfile: "{{ lookup('file', 'svi.csv') }}"
   tasks:
   - name: Path to CSV, delimeter $, register to object users, localhost
     community.general.read_csv:
@@ -11,14 +9,8 @@
     register: jinja
     delegate_to: localhost
 
-  - name: Parse CSV To YAML, This is vlan conversion
-    template:
-      src: "./svi.j2"
-      dest: "/var/lib/awx/projects/_73__alamogordo/config/svi_output.cfg"
-    run_once: true
-
   - name: Jinja Template
     template:
-      src: "./Alamogordo.j2"
-      dest: "/var/lib/awx/projects/_73__alamogordo/config/{{ item.hostname }}.cfg"
+      src: "./ArubaOS_JINJA2.j2"
+      dest: "/var/lib/awx/projects/_80__test_jinja/{{ item.hostname }}.cfg"
     loop: "{{ jinja.list }}"
