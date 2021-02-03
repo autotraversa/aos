@@ -13,20 +13,20 @@ router-id {{ item.ospf_router_id }}
 {# if ospf_redistribute_network is defined and item.ospf_redistribute_network | length > 0 }
 redistribute {{ item.ospf_redistribute_network }}
 {# endif #}
-{% if item.spanning_tree_bpdu_filter is defined and item.spanning_tree_bpdu_filter | length > 0 %}
-spanning-tree {{ item.spanning_tree_bpdu_filter }} bpdu-filter
+{% if item.spanning_tree_mode is defined and item.spanning_tree_mode == "Rapid" %}
+spanning-tree
+spanning-tree mode rapid-pvst
+{% elif item.spanning_tree_mode is defined and item.spanning_tree_mode == "Mst" %}
+spanning-tree
+spanning-tree mode mst
+{% elif item.spanning_tree_mode is defined and item.spanning_tree_mode == "Pvst" %}
+spanning-tree
+spanning-tree mode pvst
 {% else %}
 {% endif %}
 
-{% if item.spanning_tree_mode is defined and item.spanning_tree_mode == "rapid" %}
-spanning-tree
-spanning-tree mode rapid-pvst
-{% elif item.spanning_tree_mode is defined and item.spanning_tree_mode == "mst" %}
-spanning-tree
-spanning-tree mode mst
-{% elif item.spanning_tree_mode is defined and item.spanning_tree_mode == "pvst" %}
-spanning-tree
-spanning-tree mode pvst
+{% if item.spanning_tree_bpdu_filter is defined and item.spanning_tree_bpdu_filter | length > 0 %}
+spanning-tree {{ item.spanning_tree_bpdu_filter }} bpdu-filter
 {% else %}
 {% endif %}
 
