@@ -9,11 +9,17 @@ exit
 {% set vlan_name = item.vlan_name.split('!') %}
 {% if item.vlan_ip is defined and item.vlan_ip | length > 0 %}
 {% set vlan_ip = item.vlan_ip.split('!') %}
+{% if item.vlan_igmp is defined and item.vlan_igmp | length > 0 %}
+{% set vlan_igmp = item.vlan_igmp.split('!') %}
 
 {% for n in range(vlan_id|length) %}
 vlan {{ vlan_id[n] }}
 name {{ vlan_name[n] }}
 ip address {{ vlan_ip[n] }}
+{% if vlan_igmp[n] == "yes" %}
+ip igmp
+{% else %}
+{% endif %}
 {% endfor %}
 
 {% else %}
