@@ -10,6 +10,9 @@ exit
 
 {% for each_vlan_id in vlan_id %}
 vlan {{ each_vlan_id }}
+{% for each_vlan_name in vlan_name %}
+description {{ each_vlan_name }}
+{% endfor %}
 {% endfor %}
 
 {% else %}
