@@ -1,4 +1,8 @@
 hostname {{ item.hostname }}
+vlan 1
+no ipv6 enable
+no ipv6 address dhcp full
+exit
 {# if item.ospf_area is defined and item.ospf_area | length > 0 }
 router ospf
 area {{ item.ospf_area }}
@@ -24,21 +28,18 @@ spanning-tree
 spanning-tree mode pvst
 {% else %}
 {% endif %}
-{% if item.spanning_tree_bpdu_filter is defined and item.spanning_tree_bpdu_filter | length > 0 %}
-spanning-tree {{ item.spanning_tree_bpdu_filter }} bpdu-filter
-{% else %}
-{% endif %}
-
 {% if item.spanning_tree_vlan is defined and item.spanning_tree_vlan_priority is defined and item.spanning_tree_vlan | length > 0 and item.spanning_tree_vlan_priority | length > 0 %}
 spanning-tree vlan {{ item.spanning_tree_vlan }} priority {{ item.spanning_tree_vlan_priority }}
 {% else %}
 {% endif %}
-
+{% if item.spanning_tree_bpdu_filter is defined and item.spanning_tree_bpdu_filter | length > 0 %}
+spanning-tree {{ item.spanning_tree_bpdu_filter }} bpdu-filter
+{% else %}
+{% endif %}
 {% if item.spanning_tree_bpdu_protection_port is defined and item.spanning_tree_bpdu_protection_port | length > 0 %}
 spanning-tree {{ item.spanning_tree_bpdu_protection_port }} bpdu-protection
 {% else %}
 {% endif %}
-
 {% if item.spanning_tree_bpdu_protection_timeout is defined and item.spanning_tree_bpdu_protection_timeout | length > 0 %}
 spanning-tree bpdu-protection-timeout {{ item.spanning_tree_bpdu_protection_timeout }}
 {% else %}
