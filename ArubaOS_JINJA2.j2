@@ -9,7 +9,7 @@ exit
 {% set vlan_name = item.vlan_name.split('!') %}
 
 
-vlan {{ vlan_id[loop.index0] }}
+vlan {{ vlan_id }}
 
 
 {% else %}
