@@ -1,22 +1,18 @@
 hostname {{ item.hostname }}
-
-{% if item.ospf_area is defined and item.ospf_area | length > 0 %}
+{# if item.ospf_area is defined and item.ospf_area | length > 0 }
 router ospf
 area {{ item.ospf_area }}
-{% endif %}
-{% if item.ospf_zone is defined and item.ospf_zone | length > 0 %}
+{# endif #}
+{# if item.ospf_zone is defined and item.ospf_zone | length > 0 }
 area {{ item.ospf_zone }}
 enable
-{% endif %}
-
-{% if item.ospf_router_id is defined and item.ospf_router_id | length > 0 %}
+{# endif #}
+{# if item.ospf_router_id is defined and item.ospf_router_id | length > 0 }
 router-id {{ item.ospf_router_id }}
-{% endif %}
-
-{% if ospf_redistribute_network is defined and item.ospf_redistribute_network | length > 0 %}
+{# endif #}
+{# if ospf_redistribute_network is defined and item.ospf_redistribute_network | length > 0 }
 redistribute {{ item.ospf_redistribute_network }}
-{% endif %}
-
+{# endif #}
 {% if item.spanning_tree_bpdu_filter is defined and item.spanning_tree_bpdu_filter | length > 0 %}
 spanning-tree {{ item.spanning_tree_bpdu_filter }} bpdu-filter
 {% else %}
