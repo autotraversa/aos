@@ -12,7 +12,7 @@ exit
 vlan {{ each_vlan_id }}
 description {{ each_vlan_name }}
 {% endfor %}
-
+{% endfor %}
 {% else %}
 {% endif %}
 {# if item.ospf_area is defined and item.ospf_area | length > 0 }
