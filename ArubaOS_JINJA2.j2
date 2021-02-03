@@ -11,6 +11,10 @@ exit
 {% set vlan_ip = item.vlan_ip.split('!') %}
 {% if item.vlan_igmp is defined and item.vlan_igmp | length > 0 %}
 {% set vlan_igmp = item.vlan_igmp.split('!') %}
+{% if item.vlan_igmp is defined and item.vlan_igmp | length > 0 %}
+{% set vlan_igmp = item.vlan_igmp.split('!') %}
+{% if item.vlan_ip_helper is defined and item.vlan_ip_helper | length > 0 %}
+{% set vlan_ip_helper = item.vlan_ip_helper.split('!') %}
 
 {% for n in range(vlan_id|length) %}
 vlan {{ vlan_id[n] }}
@@ -24,9 +28,14 @@ ip address {{ vlan_ip[n] }}
 ip igmp
 {% else %}
 {% endif %}
-
+{% if vlan_ip_helper[n] == "N/A" %}
+{% else %}
+ip helper-address {{ vlan_ip_helper[n] }}
+{% endif %}
 {% endfor %}
 
+{% else %}
+{% endif %}
 {% else %}
 {% endif %}
 {% else %}
