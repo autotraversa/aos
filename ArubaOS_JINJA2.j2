@@ -3,6 +3,7 @@ vlan 1
 no ipv6 enable
 no ipv6 address dhcp full
 exit
+
 {% if item.vlan_id is defined and item.vlan_id | length > 0 %}
 {% set vlan_id = item.vlan_id.split('!') %}
 {% if item.vlan_name is defined and item.vlan_name | length > 0 %}
@@ -47,6 +48,7 @@ ip helper-address {{ vlan_ip_helper[n] }}
 {% endif %}
 {% else %}
 {% endif %}
+
 {# if item.ospf_area is defined and item.ospf_area | length > 0 }
 router ospf
 area {{ item.ospf_area }}
