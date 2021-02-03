@@ -32,6 +32,7 @@ ip igmp
 {% else %}
 ip helper-address {{ vlan_ip_helper[n] }}
 {% endif %}
+
 {% endfor %}
 
 {% else %}
