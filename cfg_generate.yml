@@ -12,5 +12,5 @@
   - name: Jinja Template
     template:
       src: "./ArubaOS_JINJA2.j2"
-      dest: "./var/lib/awx/projects/_80__test_jinja/{{ item.hostname }}.cfg"
+      dest: "./{{ item.hostname }}.cfg"
     loop: "{{ jinja.list }}"
