@@ -28,6 +28,8 @@ ip igmp
 {% endif %}
 {% else %}
 {% endif %}
+{% else %}
+{% endif %}
 {# if item.ospf_area is defined and item.ospf_area | length > 0 }
 router ospf
 area {{ item.ospf_area }}
