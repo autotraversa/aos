@@ -15,8 +15,12 @@ exit
 {% for n in range(vlan_id|length) %}
 vlan {{ vlan_id[n] }}
 name {{ vlan_name[n] }}
+{% if vlan_ip[n] == "L2" %}
+no ip add
+{% else %}
 ip address {{ vlan_ip[n] }}
-{% if vlan_igmp[n] == "yes" %}
+{% endif %}
+{% if vlan_igmp[n] == "Yes" %}
 ip igmp
 {% else %}
 {% endif %}
