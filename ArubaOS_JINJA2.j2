@@ -93,17 +93,6 @@ ntp server {{ each_ntp_server }}
 ntp source {{ item.ntp_source }}
 {% endif %}
 
-
-timesync ntp
-ntp unicast
-ntp enable
-{% set ntp_server = item.ntp_server.split(',') %}
-{% for each_ntp_server in ntp_server %}
-ntp server {{ each_ntp_server }}
-{% endfor %}
-{% else %}
-{% endif %}
-
 {% if item.timezone is defined and item.timezone | length > 0 %}
 time daylight-time-rule continental-us-and-canada
 time timezone {{ item.timezone }}
